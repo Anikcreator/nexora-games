@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Nexora Games - Tic-Tac-Toe</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    min-height: 100vh;
+
+    padding: 15px;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #20234c,
+            #080916 60%,
+            #03040a
+        );
+
+    color: white;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    display: flex;
+
+    justify-content: center;
+}
+
+.game {
+    width: min(100%, 650px);
+
+    text-align: center;
+}
+
+.top {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.top button {
+    width: 46px;
+    height: 46px;
+
+    border-radius: 13px;
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    background:
+        rgba(255,255,255,.07);
+
+    color: white;
+
+    cursor: pointer;
+}
+
+h1 {
+    margin: 5px 0 15px;
+
+    font-size:
+        clamp(28px, 7vw, 44px);
+
+    letter-spacing: 1px;
+}
+
+.panel {
+    padding: 15px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,.055);
+
+    border:
+        1px solid rgba(255,255,255,.09);
+
+    margin-bottom: 12px;
+}
+
+.mode-buttons {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+}
+
+.mode-btn {
+    min-height: 45px;
+
+    border: 1px solid #3f4777;
+
+    border-radius: 11px;
+
+    background:
+        #11142a;
+
+    color: #aeb6d7;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.mode-btn.active {
+    background:
+        linear-gradient(
+            135deg,
+            #5d55ed,
+            #3489f5
+        );
+
+    color: white;
+
+    border-color: transparent;
+}
+
+.players {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 10px;
+
+    margin-top: 10px;
+}
+
+.player {
+    text-align: left;
+}
+
+.player label {
+    display: block;
+
+    color: #7f88a8;
+
+    font-size: 11px;
+
+    margin-bottom: 5px;
+
+    letter-spacing: 1px;
+}
+
+.player input,
+.player-display {
+    width: 100%;
+
+    padding: 11px;
+
+    border-radius: 10px;
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    background:
+        rgba(0,0,0,.25);
+
+    color: white;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.player-display {
+    min-height: 40px;
+
+    display: flex;
+
+    align-items: center;
+}
+
+.bot-settings {
+    margin-top: 10px;
+}
+
+.bot-settings select {
+    width: 100%;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: #11142a;
+
+    color: white;
+
+    border:
+        1px solid #3f4777;
+}
+
+.scoreboard {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 8px;
+
+    margin-bottom: 12px;
+}
+
+.score {
+    padding: 9px;
+
+    border-radius: 11px;
+
+    background:
+        rgba(255,255,255,.05);
+}
+
+.score small {
+    display: block;
+
+    color: #7f88a8;
+
+    font-size: 10px;
+}
+
+.score strong {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 19px;
+}
+
+
+/* BOARD */
+
+.board {
+    width: min(92vw, 500px);
+
+    aspect-ratio: 1;
+
+    margin:
+        0 auto 15px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 9px;
+}
+
+.cell {
+    border: 0;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #171b36,
+            #0c0e1e
+        );
+
+    border:
+        1px solid rgba(255,255,255,.10);
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-shadow:
+        inset 0 0 25px
+        rgba(0,0,0,.25);
+
+    transition:
+        transform .12s,
+        background .12s;
+}
+
+.cell:hover {
+    background:
+        linear-gradient(
+            145deg,
+            #20264b,
+            #101329
+        );
+}
+
+.cell:active {
+    transform: scale(.96);
+}
+
+.cell img {
+    width: 58%;
+    height: 58%;
+
+    object-fit: contain;
+
+    pointer-events: none;
+}
+
+.status {
+    min-height: 27px;
+
+    color: #aeb6d7;
+
+    font-size: 15px;
+
+    margin-bottom: 10px;
+}
+
+.restart {
+    width: 100%;
+
+    min-height: 48px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #5d55ed,
+            #3489f5
+        );
+
+    color: white;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+@media (max-width: 480px) {
+
+    .players {
+        grid-template-columns: 1fr;
+    }
+
+    .board {
+        gap: 6px;
+    }
+
+    .cell {
+        border-radius: 13px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div class="game">
+
+
+    <div class="top">
+
+        <button
+            id="homeBtn"
+            aria-label="Home"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M3 11.5 12 4l9 7.5"/>
+                <path d="M5 10.5V20h14v-9.5"/>
+                <path d="M9 20v-5h6v5"/>
+            </svg>
+
+        </button>
+
+
+        <h1>
+
+            <img
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/274c.svg"
+                width="30"
+                height="30"
+                alt="X"
+                style="vertical-align:-4px"
+            >
+
+            TIC-TAC-TOE
+
+        </h1>
+
+
+        <button
+            id="restartTop"
+            aria-label="Restart"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M20 11a8 8 0 0 0-14-5"/>
+                <path d="M6 3v4h4"/>
+                <path d="M4 13a8 8 0 0 0 14 5"/>
+                <path d="M18 21v-4h-4"/>
+            </svg>
+
+        </button>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="mode-buttons">
+
+            <button
+                class="mode-btn active"
+                id="twoPlayerBtn"
+            >
+                2 PLAYERS
+            </button>
+
+            <button
+                class="mode-btn"
+                id="botBtn"
+            >
+                VS BOT
+            </button>
+
+        </div>
+
+
+        <div class="players">
+
+            <div class="player">
+
+                <label>
+                    PLAYER 1
+                </label>
+
+                <div
+                    class="player-display"
+                    id="player1"
+                >
+                    Guest
+                </div>
+
+            </div>
+
+
+            <div class="player">
+
+                <label>
+                    PLAYER 2
+                </label>
+
+                <input
+                    id="player2"
+                    maxlength="20"
+                    value="Player 2"
+                    autocomplete="off"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="bot-settings"
+            id="botSettings"
+            style="display:none"
+        >
+
+            <select id="botDifficulty">
+
+                <option value="easy">
+                    Easy Bot
+                </option>
+
+                <option value="medium" selected>
+                    Medium Bot
+                </option>
+
+                <option value="hard">
+                    Hard Bot
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="scoreboard">
+
+        <div class="score">
+
+            <small id="scoreName1">
+                PLAYER 1
+            </small>
+
+            <strong id="score1">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="score">
+
+            <small>
+                DRAWS
+            </small>
+
+            <strong id="draws">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="score">
+
+            <small id="scoreName2">
+                PLAYER 2
+            </small>
+
+            <strong id="score2">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="board"
+        id="board"
+    ></div>
+
+
+    <div
+        class="status"
+        id="status"
+    >
+        Player 1's turn
+    </div>
+
+
+    <button
+        class="restart"
+        id="restart"
+    >
+        NEW ROUND
+    </button>
+
+</div>
+
+
+<script>
+
+/* ================= ASSETS ================= */
+
+const X_IMAGE =
+    "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/274c.svg";
+
+const O_IMAGE =
+    "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2b55.svg";
+
+
+/* ================= PLAYER ================= */
+
+const player1 =
+    localStorage.getItem(
+        "nexoraPlayer"
+    ) || "Guest";
+
+document.getElementById(
+    "player1"
+).textContent =
+    player1;
+
+
+const player2Input =
+    document.getElementById(
+        "player2"
+    );
+
+
+player2Input.value =
+    localStorage.getItem(
+        "nexoraTicTacToePlayer2"
+    ) || "Player 2";
+
+
+function keyName(name) {
+
+    return encodeURIComponent(
+        name.trim().toLowerCase()
+    );
+}
+
+
+function winKey(name) {
+
+    return (
+        "nexoraTicTacToeWins_" +
+        keyName(name)
+    );
+}
+
+
+function getWins(name) {
+
+    return Number(
+        localStorage.getItem(
+            winKey(name)
+        ) || 0
+    );
+}
+
+
+function setWins(name, value) {
+
+    localStorage.setItem(
+        winKey(name),
+        value
+    );
+}
+
+
+/* ================= STATE ================= */
+
+let board = [];
+
+let currentPlayer = "X";
+
+let gameActive = true;
+
+let mode = "two";
+
+let draws = 0;
+
+
+/* ================= ELEMENTS ================= */
+
+const boardElement =
+    document.getElementById(
+        "board"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+const botSettings =
+    document.getElementById(
+        "botSettings"
+    );
+
+const botDifficulty =
+    document.getElementById(
+        "botDifficulty"
+    );
+
+
+/* ================= SOUND ================= */
+
+let audio = null;
+
+
+function beep(
+    frequency,
+    duration
+) {
+
+    try {
+
+        if (!audio) {
+
+            audio =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+        }
+
+        if (
+            audio.state ===
+            "suspended"
+        ) {
+            audio.resume();
+        }
+
+        const oscillator =
+            audio.createOscillator();
+
+        const gain =
+            audio.createGain();
+
+        oscillator.frequency.value =
+            frequency;
+
+        oscillator.type =
+            "sine";
+
+        gain.gain.setValueAtTime(
+            0.04,
+            audio.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audio.currentTime +
+            duration
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+
+        oscillator.start();
+
+        oscillator.stop(
+            audio.currentTime +
+            duration
+        );
+
+    } catch {}
+}
+
+
+/* ================= RENDER ================= */
+
+function render() {
+
+    boardElement.innerHTML = "";
+
+
+    board.forEach(
+        (value, index) => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.className =
+                "cell";
+
+            button.dataset.index =
+                index;
+
+            button.setAttribute(
+                "aria-label",
+                "Cell " +
+                (index + 1)
+            );
+
+
+            if (value) {
+
+                const image =
+                    document.createElement(
+                        "img"
+                    );
+
+                image.src =
+                    value === "X"
+                    ? X_IMAGE
+                    : O_IMAGE;
+
+                image.alt =
+                    value;
+
+                button.appendChild(
+                    image
+                );
+            }
+
+
+            button.addEventListener(
+                "click",
+                () => play(index)
+            );
+
+
+            boardElement.appendChild(
+                button
+            );
+        }
+    );
+}
+
+
+/* ================= RESET ================= */
+
+function newRound() {
+
+    board =
+        Array(9).fill(null);
+
+    currentPlayer = "X";
+
+    gameActive = true;
+
+    status.textContent =
+        getName("X") +
+        "'s turn";
+
+    render();
+}
+
+
+function getName(mark) {
+
+    if (mark === "X") {
+
+        return player1;
+    }
+
+
+    if (mode === "bot") {
+
+        return "Nexora Bot";
+    }
+
+
+    return (
+        player2Input.value.trim() ||
+        "Player 2"
+    );
+}
+
+
+/* ================= PLAY ================= */
+
+function play(index) {
+
+    if (!gameActive) {
+        return;
+    }
+
+    if (board[index]) {
+        return;
+    }
+
+
+    if (
+        mode === "bot" &&
+        currentPlayer === "O"
+    ) {
+        return;
+    }
+
+
+    board[index] =
+        currentPlayer;
+
+    beep(
+        currentPlayer === "X"
+        ? 550
+        : 430,
+        0.06
+    );
+
+
+    const result =
+        checkWinner(board);
+
+
+    if (result) {
+
+        finish(result);
+
+        return;
+    }
+
+
+    currentPlayer =
+        currentPlayer === "X"
+        ? "O"
+        : "X";
+
+
+    status.textContent =
+        getName(currentPlayer) +
+        "'s turn";
+
+
+    render();
+
+
+    if (
+        mode === "bot" &&
+        currentPlayer === "O"
+    ) {
+
+        setTimeout(
+            botMove,
+            350
+        );
+    }
+}
+
+
+/* ================= WIN CHECK ================= */
+
+const wins = [
+
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+
+    [0,4,8],
+    [2,4,6]
+
+];
+
+
+function checkWinner(state) {
+
+    for (
+        const combo of wins
+    ) {
+
+        const [
+            a,
+            b,
+            c
+        ] = combo;
+
+
+        if (
+            state[a] &&
+            state[a] === state[b] &&
+            state[a] === state[c]
+        ) {
+
+            return state[a];
+        }
+    }
+
+
+    if (
+        state.every(
+            cell => cell !== null
+        )
+    ) {
+
+        return "draw";
+    }
+
+
+    return null;
+}
+
+
+/* ================= FINISH ================= */
+
+function finish(result) {
+
+    gameActive = false;
+
+    render();
+
+
+    if (result === "draw") {
+
+        draws++;
+
+        document.getElementById(
+            "draws"
+        ).textContent =
+            draws;
+
+        status.textContent =
+            "It's a draw.";
+
+        beep(300, 0.18);
+
+        return;
+    }
+
+
+    const winnerName =
+        getName(result);
+
+
+    const oldWins =
+        getWins(winnerName);
+
+
+    setWins(
+        winnerName,
+        oldWins + 1
+    );
+
+
+    updateScores();
+
+
+    status.textContent =
+        winnerName +
+        " wins the round.";
+
+
+    beep(800, 0.15);
+
+    setTimeout(
+        () => beep(1000, 0.20),
+        130
+    );
+}
+
+
+/* ================= SCORES ================= */
+
+function updateScores() {
+
+    const name1 =
+        player1;
+
+
+    const name2 =
+        getName("O");
+
+
+    document.getElementById(
+        "scoreName1"
+    ).textContent =
+        name1;
+
+
+    document.getElementById(
+        "scoreName2"
+    ).textContent =
+        name2;
+
+
+    document.getElementById(
+        "score1"
+    ).textContent =
+        getWins(name1);
+
+
+    document.getElementById(
+        "score2"
+    ).textContent =
+        getWins(name2);
+}
+
+
+/* ================= BOT ================= */
+
+function botMove() {
+
+    if (
+        !gameActive ||
+        mode !== "bot"
+    ) {
+        return;
+    }
+
+
+    let move;
+
+
+    if (
+        botDifficulty.value ===
+        "easy"
+    ) {
+
+        move =
+            randomMove();
+
+    } else if (
+        botDifficulty.value ===
+        "medium"
+    ) {
+
+        move =
+            mediumMove();
+
+    } else {
+
+        move =
+            bestMove();
+    }
+
+
+    if (
+        move !== null &&
+        move !== undefined
+    ) {
+
+        board[move] = "O";
+
+        beep(430, 0.06);
+
+        const result =
+            checkWinner(board);
+
+
+        if (result) {
+
+            finish(result);
+
+            return;
+        }
+
+
+        currentPlayer = "X";
+
+        status.textContent =
+            player1 +
+            "'s turn";
+
+        render();
+    }
+}
+
+
+/* ================= RANDOM BOT ================= */
+
+function emptyCells(state) {
+
+    const result = [];
+
+    state.forEach(
+        (value, index) => {
+
+            if (!value) {
+                result.push(index);
+            }
+        }
+    );
+
+    return result;
+}
+
+
+function randomMove() {
+
+    const empty =
+        emptyCells(board);
+
+    if (!empty.length) {
+        return null;
+    }
+
+    return empty[
+        Math.floor(
+            Math.random() *
+            empty.length
+        )
+    ];
+}
+
+
+/* ================= MEDIUM BOT ================= */
+
+function findWinningMove(mark) {
+
+    for (
+        const index of emptyCells(board)
+    ) {
+
+        const copy =
+            [...board];
+
+        copy[index] = mark;
+
+        if (
+            checkWinner(copy) ===
+            mark
+        ) {
+
+            return index;
+        }
+    }
+
+    return null;
+}
+
+
+function mediumMove() {
+
+    let move =
+        findWinningMove("O");
+
+
+    if (move !== null) {
+        return move;
+    }
+
+
+    move =
+        findWinningMove("X");
+
+
+    if (move !== null) {
+        return move;
+    }
+
+
+    if (!board[4]) {
+        return 4;
+    }
+
+
+    const corners =
+        [0,2,6,8]
+            .filter(
+                index => !board[index]
+            );
+
+
+    if (corners.length) {
+
+        return corners[
+            Math.floor(
+                Math.random() *
+                corners.length
+            )
+        ];
+    }
+
+
+    return randomMove();
+}
+
+
+/* ================= HARD BOT ================= */
+
+function bestMove() {
+
+    let bestScore =
+        -Infinity;
+
+    let move = null;
+
+
+    for (
+        const index of emptyCells(board)
+    ) {
+
+        const copy =
+            [...board];
+
+        copy[index] = "O";
+
+
+        const score =
+            minimax(
+                copy,
+                false
+            );
+
+
+        if (
+            score > bestScore
+        ) {
+
+            bestScore = score;
+
+            move = index;
+        }
+    }
+
+
+    return move;
+}
+
+
+function minimax(
+    state,
+    maximizing
+) {
+
+    const result =
+        checkWinner(state);
+
+
+    if (result === "O") {
+        return 10;
+    }
+
+    if (result === "X") {
+        return -10;
+    }
+
+    if (result === "draw") {
+        return 0;
+    }
+
+
+    if (maximizing) {
+
+        let best =
+            -Infinity;
+
+
+        for (
+            const index of emptyCells(state)
+        ) {
+
+            const copy =
+                [...state];
+
+            copy[index] = "O";
+
+
+            best =
+                Math.max(
+                    best,
+                    minimax(
+                        copy,
+                        false
+                    )
+                );
+        }
+
+
+        return best;
+
+    } else {
+
+        let best =
+            Infinity;
+
+
+        for (
+            const index of emptyCells(state)
+        ) {
+
+            const copy =
+                [...state];
+
+            copy[index] = "X";
+
+
+            best =
+                Math.min(
+                    best,
+                    minimax(
+                        copy,
+                        true
+                    )
+                );
+        }
+
+
+        return best;
+    }
+}
+
+
+/* ================= MODE ================= */
+
+document.getElementById(
+    "twoPlayerBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        mode = "two";
+
+        document.getElementById(
+            "twoPlayerBtn"
+        ).classList.add("active");
+
+        document.getElementById(
+            "botBtn"
+        ).classList.remove("active");
+
+        botSettings.style.display =
+            "none";
+
+        player2Input.disabled =
+            false;
+
+        player2Input.value =
+            localStorage.getItem(
+                "nexoraTicTacToePlayer2"
+            ) || "Player 2";
+
+        newRound();
+
+        updateScores();
+    }
+);
+
+
+document.getElementById(
+    "botBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        mode = "bot";
+
+        document.getElementById(
+            "botBtn"
+        ).classList.add("active");
+
+        document.getElementById(
+            "twoPlayerBtn"
+        ).classList.remove("active");
+
+        botSettings.style.display =
+            "block";
+
+        player2Input.disabled =
+            true;
+
+        player2Input.value =
+            "Nexora Bot";
+
+        newRound();
+
+        updateScores();
+    }
+);
+
+
+/* ================= PLAYER 2 SAVE ================= */
+
+player2Input.addEventListener(
+    "input",
+    () => {
+
+        if (
+            mode === "two"
+        ) {
+
+            const value =
+                player2Input.value.trim() ||
+                "Player 2";
+
+            localStorage.setItem(
+                "nexoraTicTacToePlayer2",
+                value
+            );
+
+            updateScores();
+        }
+    }
+);
+
+
+/* ================= BUTTONS ================= */
+
+document.getElementById(
+    "restart"
+).addEventListener(
+    "click",
+    () => {
+
+        beep(500, 0.06);
+
+        newRound();
+    }
+);
+
+
+document.getElementById(
+    "restartTop"
+).addEventListener(
+    "click",
+    () => {
+
+        beep(500, 0.06);
+
+        newRound();
+    }
+);
+
+
+document.getElementById(
+    "homeBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "index.html";
+    }
+);
+
+
+/* ================= INIT ================= */
+
+updateScores();
+
+newRound();
+
+</script>
+
+</body>
+</html>

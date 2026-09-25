@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Nexora Games - Memory</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    min-height: 100vh;
+
+    padding: 15px;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #40204b,
+            #100817 58%,
+            #040205
+        );
+
+    color: white;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    display: flex;
+
+    justify-content: center;
+}
+
+.game {
+    width: min(100%, 720px);
+
+    text-align: center;
+}
+
+.top {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+}
+
+.top button {
+    width: 46px;
+    height: 46px;
+
+    border-radius: 13px;
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    background:
+        rgba(255,255,255,.07);
+
+    color: white;
+
+    cursor: pointer;
+}
+
+h1 {
+    margin: 5px 0;
+
+    font-size:
+        clamp(28px, 7vw, 44px);
+}
+
+.info {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 8px;
+
+    margin-bottom: 10px;
+}
+
+.info-box {
+    padding: 9px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,.05);
+
+    border:
+        1px solid rgba(255,255,255,.08);
+}
+
+.info-box small {
+    display: block;
+
+    color: #9c8fa4;
+
+    font-size: 10px;
+}
+
+.info-box strong {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 18px;
+}
+
+.controls {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 12px;
+}
+
+select,
+.control-btn {
+    min-height: 42px;
+
+    border-radius: 10px;
+
+    border:
+        1px solid #593b65;
+
+    background:
+        #1a1020;
+
+    color: white;
+
+    padding:
+        9px 13px;
+
+    font-weight: 700;
+}
+
+.control-btn {
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8d4ed4,
+            #d249a4
+        );
+
+    border: 0;
+}
+
+
+/* MEMORY BOARD */
+
+.board {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 9px;
+
+    width: min(94vw, 620px);
+
+    margin:
+        0 auto 13px;
+}
+
+
+/* CARD */
+
+.card {
+    position: relative;
+
+    aspect-ratio: 1;
+
+    border: 0;
+
+    padding: 0;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    perspective: 800px;
+
+    min-width: 0;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    transition:
+        transform .35s;
+
+    transform-style:
+        preserve-3d;
+}
+
+.card.flipped .card-inner,
+.card.matched .card-inner {
+    transform:
+        rotateY(180deg);
+}
+
+.card-face {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 14px;
+
+    backface-visibility:
+        hidden;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+/* BACK OF CARD */
+
+.card-front {
+    background:
+        linear-gradient(
+            145deg,
+            #3b1d50,
+            #1a1026
+        );
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    box-shadow:
+        inset 0 0 25px
+        rgba(255,100,220,.08);
+}
+
+.card-front::before {
+    content: "?";
+
+    width: 42%;
+
+    aspect-ratio: 1;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        rgba(255,255,255,.07);
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    color: #d99be8;
+
+    font-size: 24px;
+
+    font-weight: 900;
+}
+
+
+/* CARD CONTENT */
+
+.card-back {
+    background:
+        linear-gradient(
+            145deg,
+            #f7f4ff,
+            #ddd5ec
+        );
+
+    transform:
+        rotateY(180deg);
+
+    border:
+        2px solid
+        rgba(255,255,255,.25);
+}
+
+.card-back img {
+    width: 63%;
+    height: 63%;
+
+    object-fit: contain;
+
+    pointer-events: none;
+}
+
+.card.matched .card-back {
+    box-shadow:
+        0 0 20px
+        rgba(255,100,210,.35);
+}
+
+
+/* STATUS */
+
+.status {
+    min-height: 23px;
+
+    color: #aa9cb1;
+
+    font-size: 14px;
+}
+
+@media (max-width: 480px) {
+
+    .info {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .board {
+        gap: 6px;
+    }
+
+    .card-face {
+        border-radius: 10px;
+    }
+
+}
+
+@media (max-width: 350px) {
+
+    .board {
+        gap: 4px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div class="game">
+
+
+    <div class="top">
+
+        <button
+            id="homeBtn"
+            aria-label="Home"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M3 11.5 12 4l9 7.5"/>
+                <path d="M5 10.5V20h14v-9.5"/>
+                <path d="M9 20v-5h6v5"/>
+            </svg>
+
+        </button>
+
+
+        <h1>
+
+            <img
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9e0.svg"
+                alt="Brain"
+                width="34"
+                height="34"
+                style="vertical-align:-6px"
+            >
+
+            MEMORY
+
+        </h1>
+
+
+        <button
+            id="restartBtn"
+            aria-label="Restart"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M20 11a8 8 0 0 0-14-5"/>
+                <path d="M6 3v4h4"/>
+                <path d="M4 13a8 8 0 0 0 14 5"/>
+                <path d="M18 21v-4h-4"/>
+            </svg>
+
+        </button>
+
+    </div>
+
+
+    <div class="info">
+
+        <div class="info-box">
+
+            <small>
+                PLAYER
+            </small>
+
+            <strong id="playerName">
+                Guest
+            </strong>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <small>
+                SCORE
+            </small>
+
+            <strong id="score">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <small>
+                BEST
+            </small>
+
+            <strong id="highScore">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <small>
+                MOVES
+            </small>
+
+            <strong id="moves">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="controls">
+
+        <select id="difficulty">
+
+            <option value="easy">
+                Easy
+            </option>
+
+            <option
+                value="medium"
+                selected
+            >
+                Medium
+            </option>
+
+            <option value="hard">
+                Hard
+            </option>
+
+        </select>
+
+
+        <button
+            class="control-btn"
+            id="newGame"
+        >
+            NEW GAME
+        </button>
+
+    </div>
+
+
+    <div
+        class="board"
+        id="board"
+    ></div>
+
+
+    <div
+        class="status"
+        id="status"
+    >
+        Find all matching pairs.
+    </div>
+
+</div>
+
+
+<script>
+
+/* ================= EMOJI ASSETS ================= */
+
+const CDN =
+    "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/";
+
+
+const emojiPool = [
+
+    "1f34e", // apple
+    "1f34c", // banana
+    "1f347", // grapes
+    "1f349", // watermelon
+    "1f353", // strawberry
+    "1f352", // cherries
+    "1f95d", // kiwi
+    "1f34d", // pineapple
+    "1f96d", // mango
+    "1f351", // peach
+    "1f34a", // orange
+    "1f34b"  // lemon
+
+];
+
+
+/* ================= PLAYER ================= */
+
+const player =
+    localStorage.getItem(
+        "nexoraPlayer"
+    ) || "Guest";
+
+
+document.getElementById(
+    "playerName"
+).textContent =
+    player;
+
+
+function playerKey() {
+
+    return encodeURIComponent(
+        player.trim().toLowerCase()
+    );
+}
+
+
+/* ================= DIFFICULTY ================= */
+
+const pairsByDifficulty = {
+
+    easy: 6,
+
+    medium: 8,
+
+    hard: 10
+
+};
+
+
+const difficulty =
+    document.getElementById(
+        "difficulty"
+    );
+
+
+function highScoreKey() {
+
+    return (
+        "nexoraMemoryHighScore_" +
+        playerKey() +
+        "_" +
+        difficulty.value
+    );
+}
+
+
+function getHighScore() {
+
+    return Number(
+        localStorage.getItem(
+            highScoreKey()
+        ) || 0
+    );
+}
+
+
+function updateHighScore() {
+
+    document.getElementById(
+        "highScore"
+    ).textContent =
+        getHighScore();
+}
+
+
+/* ================= GAME STATE ================= */
+
+let cards = [];
+
+let firstCard = null;
+let secondCard = null;
+
+let locked = false;
+
+let matchedPairs = 0;
+
+let score = 0;
+
+let moves = 0;
+
+
+/* ================= SOUND ================= */
+
+let audio = null;
+
+
+function beep(
+    frequency,
+    duration
+) {
+
+    try {
+
+        if (!audio) {
+
+            audio =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+        }
+
+        if (
+            audio.state ===
+            "suspended"
+        ) {
+            audio.resume();
+        }
+
+        const oscillator =
+            audio.createOscillator();
+
+        const gain =
+            audio.createGain();
+
+        oscillator.frequency.value =
+            frequency;
+
+        oscillator.type =
+            "sine";
+
+        gain.gain.setValueAtTime(
+            0.035,
+            audio.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audio.currentTime +
+            duration
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+
+        oscillator.start();
+
+        oscillator.stop(
+            audio.currentTime +
+            duration
+        );
+
+    } catch {}
+}
+
+
+/* ================= SHUFFLE ================= */
+
+function shuffle(array) {
+
+    for (
+        let i = array.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+        [
+            array[i],
+            array[j]
+        ] = [
+            array[j],
+            array[i]
+        ];
+    }
+
+    return array;
+}
+
+
+/* ================= NEW GAME ================= */
+
+function newGame() {
+
+    firstCard = null;
+    secondCard = null;
+
+    locked = false;
+
+    matchedPairs = 0;
+
+    score = 0;
+
+    moves = 0;
+
+
+    document.getElementById(
+        "score"
+    ).textContent = "0";
+
+
+    document.getElementById(
+        "moves"
+    ).textContent = "0";
+
+
+    const pairCount =
+        pairsByDifficulty[
+            difficulty.value
+        ];
+
+
+    const selected =
+        emojiPool.slice(
+            0,
+            pairCount
+        );
+
+
+    cards =
+        shuffle(
+            [
+                ...selected,
+                ...selected
+            ].map(
+                emoji => ({
+                    emoji,
+                    flipped: false,
+                    matched: false
+                })
+            )
+        );
+
+
+    render();
+
+    updateHighScore();
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "Find all matching pairs.";
+}
+
+
+/* ================= RENDER ================= */
+
+function render() {
+
+    const board =
+        document.getElementById(
+            "board"
+        );
+
+
+    board.innerHTML = "";
+
+
+    if (
+        cards.length > 16
+    ) {
+
+        board.style.gridTemplateColumns =
+            "repeat(5, 1fr)";
+
+    } else {
+
+        board.style.gridTemplateColumns =
+            "repeat(4, 1fr)";
+    }
+
+
+    cards.forEach(
+        (card, index) => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.className =
+                "card";
+
+
+            if (
+                card.flipped ||
+                card.matched
+            ) {
+
+                button.classList.add(
+                    "flipped"
+                );
+            }
+
+
+            if (card.matched) {
+
+                button.classList.add(
+                    "matched"
+                );
+            }
+
+
+            const inner =
+                document.createElement(
+                    "div"
+                );
+
+            inner.className =
+                "card-inner";
+
+
+            const front =
+                document.createElement(
+                    "div"
+                );
+
+            front.className =
+                "card-face card-front";
+
+
+            const back =
+                document.createElement(
+                    "div"
+                );
+
+            back.className =
+                "card-face card-back";
+
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+            image.src =
+                CDN +
+                card.emoji +
+                ".svg";
+
+            image.alt =
+                "Memory card";
+
+
+            back.appendChild(
+                image
+            );
+
+
+            inner.appendChild(
+                front
+            );
+
+            inner.appendChild(
+                back
+            );
+
+            button.appendChild(
+                inner
+            );
+
+
+            button.addEventListener(
+                "click",
+                () => flip(index)
+            );
+
+
+            board.appendChild(
+                button
+            );
+        }
+    );
+}
+
+
+/* ================= FLIP ================= */
+
+function flip(index) {
+
+    if (locked) {
+        return;
+    }
+
+
+    const card =
+        cards[index];
+
+
+    if (
+        card.flipped ||
+        card.matched
+    ) {
+        return;
+    }
+
+
+    if (firstCard === index) {
+        return;
+    }
+
+
+    card.flipped = true;
+
+    beep(480, 0.05);
+
+    render();
+
+
+    if (
+        firstCard === null
+    ) {
+
+        firstCard = index;
+
+        return;
+    }
+
+
+    secondCard = index;
+
+    moves++;
+
+
+    document.getElementById(
+        "moves"
+    ).textContent =
+        moves;
+
+
+    locked = true;
+
+
+    const first =
+        cards[firstCard];
+
+    const second =
+        cards[secondCard];
+
+
+    if (
+        first.emoji ===
+        second.emoji
+    ) {
+
+        setTimeout(
+            matchCards,
+            350
+        );
+
+    } else {
+
+        setTimeout(
+            hideCards,
+            750
+        );
+    }
+}
+
+
+/* ================= MATCH ================= */
+
+function matchCards() {
+
+    cards[firstCard].matched =
+        true;
+
+    cards[secondCard].matched =
+        true;
+
+    cards[firstCard].flipped =
+        false;
+
+    cards[secondCard].flipped =
+        false;
+
+
+    matchedPairs++;
+
+
+    score += 10;
+
+
+    document.getElementById(
+        "score"
+    ).textContent =
+        score;
+
+
+    if (
+        score > getHighScore()
+    ) {
+
+        localStorage.setItem(
+            highScoreKey(),
+            score
+        );
+
+        updateHighScore();
+    }
+
+
+    beep(750, 0.08);
+
+    setTimeout(
+        () => beep(950, 0.10),
+        80
+    );
+
+
+    firstCard = null;
+
+    secondCard = null;
+
+    locked = false;
+
+
+    render();
+
+
+    if (
+        matchedPairs ===
+        pairsByDifficulty[
+            difficulty.value
+        ]
+    ) {
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "Congratulations! You found every pair.";
+
+        beep(1000, 0.15);
+
+        setTimeout(
+            () => beep(1300, 0.20),
+            150
+        );
+    }
+}
+
+
+/* ================= HIDE ================= */
+
+function hideCards() {
+
+    cards[firstCard].flipped =
+        false;
+
+    cards[secondCard].flipped =
+        false;
+
+
+    beep(180, 0.08);
+
+
+    firstCard = null;
+
+    secondCard = null;
+
+    locked = false;
+
+
+    render();
+}
+
+
+/* ================= BUTTONS ================= */
+
+document.getElementById(
+    "newGame"
+).addEventListener(
+    "click",
+    () => {
+
+        beep(500, 0.06);
+
+        newGame();
+    }
+);
+
+
+document.getElementById(
+    "restartBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        beep(500, 0.06);
+
+        newGame();
+    }
+);
+
+
+document.getElementById(
+    "homeBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "index.html";
+    }
+);
+
+
+difficulty.addEventListener(
+    "change",
+    () => {
+
+        newGame();
+    }
+);
+
+
+/* ================= START ================= */
+
+newGame();
+
+</script>
+
+</body>
+</html>
